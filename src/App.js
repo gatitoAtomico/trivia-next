@@ -10,41 +10,10 @@ import {
   CustomOption,
   InputLabel,
   ErrorMessageText,
+  Content,
+  FormInputs,
+  FormContent,
 } from "./styles";
-
-const Title = styled.h1`
-  font-size: 1.5em;
-  text-align: center;
-  color: #bf4f74;
-`;
-
-const Content = styled.div`
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const FormInputs = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding-bottom: 10px;
-`;
-
-const FormContent = styled.div`
-  border-radius: 8px;
-  box-shadow: rgb(230, 230, 230) 10px 10px 20px,
-    rgb(255, 255, 255) -10px -10px 20px;
-
-  padding: 20px;
-  width: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #aa3333;
-`;
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
@@ -166,7 +135,7 @@ function App() {
       {isLoading ? (
         <p>loading</p>
       ) : (
-        !!data && <Title>{JSON.stringify(data.results)}</Title>
+        !!data && <div>{JSON.stringify(data.results[0])}</div>
       )}
     </Content>
   );
