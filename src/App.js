@@ -1,7 +1,10 @@
 import styled from "styled-components";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import trivia from "./api";
 import { useState } from "react";
+import { Formik, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { CustomTextInput, CustomSelect, CustomOption } from "./styles";
 
 const Title = styled.h1`
   font-size: 1.5em;
@@ -23,14 +26,9 @@ const FormInputs = styled.div`
   gap: 10px;
   padding-bottom: 10px;
 `;
-const FormButton = styled.div`
-  display: flex;
-  justify-content: center;
-`;
 
-const Form = styled.div`
+const FormContent = styled.div`
   border-radius: 8px;
-
   background: rgb(255, 255, 255);
   box-shadow: rgb(230, 230, 230) 10px 10px 20px, rgb(255, 255, 255);
   padding: 20px;
@@ -41,37 +39,16 @@ const Form = styled.div`
   background-color: #bf4f74;
 `;
 
-const CustomSelect = styled.select`
-  width: 200px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-`;
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  amount: Yup.number()
+    .required("Amount is required")
+    .typeError("Amount must be a number")
+    .max(49, "Amount must be less than 50"),
+});
 
-const CustomOption = styled.option`
-  background-color: #fff;
-  color: #333;
-`;
-
-const CustomTextInput = styled.input`
-  padding: 10px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  width: 200px;
-  color: #333;
-
-  &:focus {
-    outline: none;
-    border-color: #007bff; /* Change border color on focus */
-  }
-`;
-
-function ExampleForm({ initialState, onSubmit }) {
+function ExampleForm({ initialState, onSubmit, setIsFormSubmitted }) {
   const [difficulty, setDifficulty] = useState(initialState.difficulty);
   const [type, setType] = useState(initialState.type);
 
@@ -84,50 +61,63 @@ function ExampleForm({ initialState, onSubmit }) {
   let difficultyOptions = ["easy", "medium", "hard"];
 
   return (
-    <Form>
-      <form
-        onSubmit={(ev) => {
-          ev.preventDefault();
+    <FormContent>
+      <Formik
+        initialValues={{
+          name: "",
+          email: "",
+          amount: "",
+        }}
+        validationSchema={validationSchema}
+        onSubmit={(values) => {
+          let amount = values.amount;
           const param1 = {
-            amount: 10,
+            amount,
             difficulty,
             type: type,
           };
           onSubmit(param1);
+          setIsFormSubmitted(true);
         }}
       >
-        <FormInputs>
-          <CustomTextInput placeholder="Full Name" />
+        <Form>
+          <FormInputs>
+            <CustomTextInput type="text" id="name" name="name" />
+            <ErrorMessage name="name" component="div" className="error" />
 
-          <CustomTextInput placeholder="Email" />
+            <CustomTextInput type="text" id="email" name="email" />
+            <ErrorMessage name="email" component="div" className="error" />
 
-          <CustomTextInput placeholder="Number of Questions" />
+            <CustomTextInput type="text" id="amount" name="amount" />
+            <ErrorMessage name="amount" component="div" className="error" />
 
-          <CustomSelect
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-          >
-            {difficultyOptions.map((option) => (
-              <CustomOption key={option} value={option}>
-                {option}
-              </CustomOption>
-            ))}
-          </CustomSelect>
+            <CustomSelect
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+            >
+              {difficultyOptions.map((option) => (
+                <CustomOption key={option} value={option}>
+                  {option}
+                </CustomOption>
+              ))}
+            </CustomSelect>
 
-          <CustomSelect value={type} onChange={(e) => setType(e.target.value)}>
-            {Object.entries(typeOptions).map(([key, value]) => (
-              <CustomOption key={key} value={value}>
-                {key}
-              </CustomOption>
-            ))}
-          </CustomSelect>
-        </FormInputs>
+            <CustomSelect
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+            >
+              {Object.entries(typeOptions).map(([key, value]) => (
+                <CustomOption key={key} value={value}>
+                  {key}
+                </CustomOption>
+              ))}
+            </CustomSelect>
 
-        <FormButton>
-          <button>Submit</button>
-        </FormButton>
-      </form>
-    </Form>
+            <button type="submit">Submit</button>
+          </FormInputs>
+        </Form>
+      </Formik>
+    </FormContent>
   );
 }
 
@@ -136,20 +126,24 @@ function App() {
     mutationFn: (values) => trivia.getQuiz(values),
   });
 
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+
   return (
     <Content>
-      <ExampleForm
-        initialState={{
-          amount: 10,
-          difficulty: "medium",
-          type: "multiple",
-        }}
-        onSubmit={(changedValues) => {
-          console.log("changed", changedValues);
-          // setForm(changedValues);
-          mutate(changedValues);
-        }}
-      />
+      {!isFormSubmitted && (
+        <ExampleForm
+          initialState={{
+            amount: 10,
+            difficulty: "medium",
+            type: "multiple",
+          }}
+          onSubmit={(changedValues) => {
+            mutate(changedValues);
+          }}
+          setIsFormSubmitted={setIsFormSubmitted}
+        />
+      )}
+
       {isLoading ? (
         <p>loading</p>
       ) : (
