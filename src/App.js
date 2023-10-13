@@ -4,6 +4,7 @@ import trivia from "./api";
 import { useState } from "react";
 import { Formik, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { decodeHTMLEntities } from "./utils/index";
 import {
   CustomTextInput,
   CustomSelect,
@@ -135,7 +136,11 @@ function App() {
       {isLoading ? (
         <p>loading</p>
       ) : (
-        !!data && <div>{JSON.stringify(data.results[0])}</div>
+        !!data && (
+          <div>
+            {data.results.map((item) => decodeHTMLEntities(item.question))}
+          </div>
+        )
       )}
     </Content>
   );
