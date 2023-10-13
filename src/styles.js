@@ -28,3 +28,12 @@ export const CustomSelect = styled.select`
 export const CustomOption = styled.option`
   background-color: #fff;
 `;
+
+export const InputLabel = styled.label`
+  color: #f8f8ff;
+`;
+
+export const ErrorMessageText = styled.div`
+  color: red;
+  font-size: 14px;
+`;

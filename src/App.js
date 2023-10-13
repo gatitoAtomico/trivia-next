@@ -4,7 +4,13 @@ import trivia from "./api";
 import { useState } from "react";
 import { Formik, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { CustomTextInput, CustomSelect, CustomOption } from "./styles";
+import {
+  CustomTextInput,
+  CustomSelect,
+  CustomOption,
+  InputLabel,
+  ErrorMessageText,
+} from "./styles";
 
 const Title = styled.h1`
   font-size: 1.5em;
@@ -23,20 +29,21 @@ const Content = styled.div`
 const FormInputs = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   padding-bottom: 10px;
 `;
 
 const FormContent = styled.div`
   border-radius: 8px;
-  background: rgb(255, 255, 255);
-  box-shadow: rgb(230, 230, 230) 10px 10px 20px, rgb(255, 255, 255);
+  box-shadow: rgb(230, 230, 230) 10px 10px 20px,
+    rgb(255, 255, 255) -10px -10px 20px;
+
   padding: 20px;
   width: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #bf4f74;
+  background-color: #aa3333;
 `;
 
 const validationSchema = Yup.object().shape({
@@ -44,6 +51,7 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   amount: Yup.number()
     .required("Amount is required")
+    .integer()
     .typeError("Amount must be a number")
     .max(49, "Amount must be less than 50"),
 });
@@ -82,15 +90,25 @@ function ExampleForm({ initialState, onSubmit, setIsFormSubmitted }) {
       >
         <Form>
           <FormInputs>
+            <InputLabel>Full Name</InputLabel>
             <CustomTextInput type="text" id="name" name="name" />
-            <ErrorMessage name="name" component="div" className="error" />
+            <ErrorMessageText>
+              <ErrorMessage name="name" component="div" className="error" />
+            </ErrorMessageText>
 
+            <InputLabel>Email</InputLabel>
             <CustomTextInput type="text" id="email" name="email" />
-            <ErrorMessage name="email" component="div" className="error" />
+            <ErrorMessageText>
+              <ErrorMessage name="email" component="div" className="error" />
+            </ErrorMessageText>
 
+            <InputLabel>Number of questions</InputLabel>
             <CustomTextInput type="text" id="amount" name="amount" />
-            <ErrorMessage name="amount" component="div" className="error" />
+            <ErrorMessageText>
+              <ErrorMessage name="amount" component="div" className="error" />
+            </ErrorMessageText>
 
+            <InputLabel>Select difficulty</InputLabel>
             <CustomSelect
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
@@ -102,6 +120,7 @@ function ExampleForm({ initialState, onSubmit, setIsFormSubmitted }) {
               ))}
             </CustomSelect>
 
+            <InputLabel>Select type</InputLabel>
             <CustomSelect
               value={type}
               onChange={(e) => setType(e.target.value)}
