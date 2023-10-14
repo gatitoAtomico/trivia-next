@@ -77,13 +77,29 @@ export const QuestionContainer = styled.div`
 export const ResultsContainer = styled.div`
   border-radius: 8px;
   padding: 15px;
-  width: 200px;
+  width: 250px;
   background-color: #faebd7;
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
   gap: 15px;
+  max-height: 250px;
+  overflow: scroll;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 `;
 
 export const TextDiv = styled.div`
@@ -91,6 +107,11 @@ export const TextDiv = styled.div`
   border-radius: 8px;
   color: white;
   background-color: ${(props) => props.color};
+  min-height: ${(props) => props.minHeight};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: ${(props) => props.fontSize};
 `;
 
 export const AnswersSection = styled.div`

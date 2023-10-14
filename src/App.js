@@ -164,7 +164,12 @@ function App() {
                 (item, questionNumber) =>
                   questionToShow == questionNumber && (
                     <div key={questionNumber}>
-                      <TextDiv color={"#97233F"} key={questionNumber}>
+                      <TextDiv
+                        minHeight={"60px"}
+                        color={"#97233F"}
+                        fontSize={"14px"}
+                        key={questionNumber}
+                      >
                         {decodeHTMLEntities(item.question)}
                       </TextDiv>
                       <AnswersSection>
@@ -180,7 +185,7 @@ function App() {
                             }}
                             key={i}
                           >
-                            {ans}
+                            {decodeHTMLEntities(ans)}
                           </Answer>
                         ))}
                       </AnswersSection>
@@ -192,11 +197,18 @@ function App() {
         )
       ) : (
         <>
+          <TextDiv minHeight={"20px"} color={"green"} fontSize={"20px"}>
+            Your Answers
+          </TextDiv>
           <ResultsContainer>
-            <TextDiv color={"green"}>Your Answers</TextDiv>
             {triviaAnswers.map((res, key) => (
-              <TextDiv color={"#aa3333"} key={key}>
-                {res}
+              <TextDiv
+                minHeight={"20px"}
+                color={"DodgerBlue"}
+                fontSize={"20px"}
+                key={key}
+              >
+                {decodeHTMLEntities(res)}
               </TextDiv>
             ))}
           </ResultsContainer>
