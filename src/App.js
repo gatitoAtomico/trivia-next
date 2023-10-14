@@ -115,7 +115,7 @@ function ExampleForm({
               ))}
             </CustomSelect>
 
-            <StyledButton>Submit</StyledButton>
+            <StyledButton type={"submit"}>Submit</StyledButton>
           </FormInputs>
         </Form>
       </Formik>
@@ -201,6 +201,7 @@ function App() {
             ))}
           </ResultsContainer>
           <StyledButton
+            type={"submit"}
             onClick={() => {
               setIsFormSubmitted(false);
               setQuestionToShow(0);
