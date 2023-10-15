@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import trivia from "./api";
 import { useState } from "react";
 import { Formik, Form, ErrorMessage } from "formik";
@@ -21,6 +21,7 @@ import {
   StyledButton,
   Loader,
   Spinner,
+  QuestionHeader,
 } from "./styles";
 
 const validationSchema = Yup.object().shape({
@@ -33,12 +34,7 @@ const validationSchema = Yup.object().shape({
     .max(49, "Amount must be less than 50"),
 });
 
-function ExampleForm({
-  initialState,
-  onSubmit,
-  setIsFormSubmitted,
-  setNumberOfQuestions,
-}) {
+function ExampleForm({ initialState, onSubmit, setIsFormSubmitted }) {
   const [difficulty, setDifficulty] = useState(initialState.difficulty);
   const [type, setType] = useState(initialState.type);
 
@@ -68,7 +64,13 @@ function ExampleForm({
           };
           onSubmit(param1);
           setIsFormSubmitted(true);
-          setNumberOfQuestions(amount);
+          trivia.storeQuizInfo({
+            full_name: values.name,
+            email: values.email,
+            number_of_questions: values.amount,
+            difficulty: difficulty,
+            type: type,
+          });
         }}
       >
         <Form>
@@ -124,15 +126,13 @@ function ExampleForm({
 }
 
 function App() {
-  const { mutate, data, isLoading, isError, error } = useMutation({
+  const { mutate, data, isLoading } = useMutation({
     queryKey: ["triviaQuestions"],
     mutationFn: (values) => trivia.getQuiz(values),
   });
 
-  const queryClient = useQueryClient();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [questionToShow, setQuestionToShow] = useState(0);
-  const [numberOfQuestions, setNumberOfQuestions] = useState(1);
   const [triviaAnswers, setTriviaAnswers] = useState([]);
 
   return (
@@ -144,88 +144,94 @@ function App() {
             difficulty: "medium",
             type: "multiple",
           }}
-          onSubmit={(changedValues) => {
+          onSubmit={async (changedValues) => {
             mutate(changedValues);
           }}
           setIsFormSubmitted={setIsFormSubmitted}
-          setNumberOfQuestions={setNumberOfQuestions}
         />
       )}
+      {isLoading && (
+        <Loader>
+          <Spinner />
+        </Loader>
+      )}
 
-      {questionToShow < numberOfQuestions ? (
-        isLoading ? (
-          <Loader>
-            <Spinner />
-          </Loader>
-        ) : (
-          !!data && (
-            <QuestionContainer>
-              {data.results.map(
-                (item, questionNumber) =>
-                  questionToShow == questionNumber && (
-                    <div key={questionNumber}>
+      {!!data &&
+        (questionToShow < data.length ? (
+          <QuestionContainer>
+            {data.map(
+              (item, questionNumber) =>
+                questionToShow === questionNumber && (
+                  <div key={item.category}>
+                    <QuestionHeader>
                       <TextDiv
-                        minHeight={"60px"}
+                        minheight={"20px"}
+                        color={"green"}
+                        fontSize={"14px"}
+                        key={questionNumber + item.category}
+                      >
+                        Category: {decodeHTMLEntities(item.category)}
+                      </TextDiv>
+                      <TextDiv
+                        minheight={"60px"}
                         color={"#97233F"}
                         fontSize={"14px"}
                         key={questionNumber}
                       >
                         {decodeHTMLEntities(item.question)}
                       </TextDiv>
-                      <AnswersSection>
-                        {shuffleAnswers(
-                          item["incorrect_answers"],
-                          item["correct_answer"]
-                        ).map((ans, i) => (
-                          <Answer
-                            onClick={() => {
-                              setQuestionToShow(questionToShow + 1);
-                              const updatedArray = [...triviaAnswers, ans];
-                              setTriviaAnswers(updatedArray);
-                            }}
-                            key={i}
-                          >
-                            {decodeHTMLEntities(ans)}
-                          </Answer>
-                        ))}
-                      </AnswersSection>
-                    </div>
-                  )
-              )}
-            </QuestionContainer>
-          )
-        )
-      ) : (
-        <>
-          <TextDiv minHeight={"20px"} color={"green"} fontSize={"20px"}>
-            Your Answers
-          </TextDiv>
-          <ResultsContainer>
-            {triviaAnswers.map((res, key) => (
-              <TextDiv
-                minHeight={"20px"}
-                color={"DodgerBlue"}
-                fontSize={"20px"}
-                key={key}
-              >
-                {decodeHTMLEntities(res)}
-              </TextDiv>
-            ))}
-          </ResultsContainer>
-          <StyledButton
-            type={"submit"}
-            onClick={() => {
-              setIsFormSubmitted(false);
-              setQuestionToShow(0);
-              setNumberOfQuestions(1);
-              setTriviaAnswers([]);
-              mutate(["triviaQuestions"], [], true);
-            }}
-          >
-            Want to go again?
-          </StyledButton>
-        </>
-      )}
+                    </QuestionHeader>
+                    <AnswersSection>
+                      {shuffleAnswers(
+                        item["incorrect_answers"],
+                        item["correct_answer"]
+                      ).map((ans, i) => (
+                        <Answer
+                          onClick={() => {
+                            setQuestionToShow(questionToShow + 1);
+                            const updatedArray = [...triviaAnswers, ans];
+                            setTriviaAnswers(updatedArray);
+                          }}
+                          key={i}
+                        >
+                          {decodeHTMLEntities(ans)}
+                        </Answer>
+                      ))}
+                    </AnswersSection>
+                  </div>
+                )
+            )}
+          </QuestionContainer>
+        ) : (
+          <>
+            <TextDiv minheight={"20px"} color={"green"} fontSize={"20px"}>
+              Your Answers
+            </TextDiv>
+            <ResultsContainer>
+              {triviaAnswers.map((res, key) => (
+                <TextDiv
+                  minheight={"20px"}
+                  color={"DodgerBlue"}
+                  fontSize={"14px"}
+                  key={key}
+                >
+                  {decodeHTMLEntities(res)}
+                </TextDiv>
+              ))}
+            </ResultsContainer>
+            <StyledButton
+              type={"submit"}
+              onClick={() => {
+                setIsFormSubmitted(false);
+                setQuestionToShow(0);
+                setTriviaAnswers([]);
+                mutate(["triviaQuestions"], [], true);
+              }}
+            >
+              Want to go again?
+            </StyledButton>
+          </>
+        ))}
     </Content>
   );
 }

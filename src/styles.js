@@ -107,11 +107,12 @@ export const TextDiv = styled.div`
   border-radius: 8px;
   color: white;
   background-color: ${(props) => props.color};
-  min-height: ${(props) => props.minHeight};
+  min-height: ${(props) => props.minheight};
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: ${(props) => props.fontSize};
+  width: 100%;
 `;
 
 export const AnswersSection = styled.div`
@@ -121,7 +122,7 @@ export const AnswersSection = styled.div`
   align-items: center;
   flex-direction: column;
   gap: 10px;
-  margin-top: 30px;
+  margin-top: 10px;
 `;
 
 export const Answer = styled.div`
@@ -185,4 +186,13 @@ export const Spinner = styled.div`
       transform: rotate(360deg);
     }
   }
+`;
+
+export const QuestionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 120px;
 `;
