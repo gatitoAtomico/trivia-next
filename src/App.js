@@ -195,11 +195,6 @@ function App() {
                               selectedAnswer === ans ? "#72A0C1" : "#aa3333"
                             }
                             onClick={() => setSelectedAnswer(ans)}
-                            // onClick={() => {
-                            //   setQuestionToShow(questionToShow + 1);
-                            //   const updatedArray = [...triviaAnswers, ans];
-                            //   setTriviaAnswers(updatedArray);
-                            // }}
                             key={i}
                           >
                             {decodeHTMLEntities(ans)}
