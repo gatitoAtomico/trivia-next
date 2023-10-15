@@ -17,5 +17,5 @@ export const shuffleAnswers = (wrongAnswers, correctAnswer) => {
     options[j] = temp;
   }
 
-  return options;
+  return options.sort((a, b) => b.localeCompare(a));
 };

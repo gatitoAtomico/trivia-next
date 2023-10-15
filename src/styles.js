@@ -68,10 +68,14 @@ export const FormContent = styled.div`
 
 export const QuestionContainer = styled.div`
   border-radius: 8px;
-  padding: 15px;
-  width: 320px;
-  height: 300px;
+  /* padding: 15px; */
+  /* width: 320px;
+  height: 300px; */
   background-color: #faebd7;
+  position: absolute; /* Position the child element absolutely */
+  /* Adjust the bottom distance as needed */
+  width: 350px;
+  height: 350px;
 `;
 
 export const ResultsContainer = styled.div`
@@ -112,7 +116,8 @@ export const TextDiv = styled.div`
   justify-content: center;
   align-items: center;
   font-size: ${(props) => props.fontSize};
-  width: 100%;
+  width: 90%;
+  margin-top: 5px;
 `;
 
 export const AnswersSection = styled.div`
@@ -127,11 +132,12 @@ export const AnswersSection = styled.div`
 
 export const Answer = styled.div`
   border-radius: 8px;
-  padding: 7px;
+  padding: 5px;
   width: 90%;
-  background-color: #aa3333;
+  background-color: ${(props) => props.color};
   text-align: center;
   color: white;
+  font-size: 13px;
 
   &:hover {
     cursor: pointer;
@@ -195,4 +201,18 @@ export const QuestionHeader = styled.div`
   flex-direction: column;
   gap: 4px;
   min-height: 120px;
+`;
+
+export const Container = styled.div`
+  position: relative;
+  width: 350px;
+  height: 400px;
+`;
+
+export const ContainerBottom = styled.div`
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  text-align: center;
 `;

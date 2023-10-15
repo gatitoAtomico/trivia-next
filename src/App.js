@@ -22,10 +22,12 @@ import {
   Loader,
   Spinner,
   QuestionHeader,
+  Container,
+  ContainerBottom,
 } from "./styles";
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
+  name: Yup.string().required("Full Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   amount: Yup.number()
     .required("Amount is required")
@@ -134,6 +136,7 @@ function App() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [questionToShow, setQuestionToShow] = useState(0);
   const [triviaAnswers, setTriviaAnswers] = useState([]);
+  const [selectedAnswer, setSelectedAnswer] = useState("");
 
   return (
     <Content>
@@ -158,50 +161,70 @@ function App() {
 
       {!!data &&
         (questionToShow < data.length ? (
-          <QuestionContainer>
-            {data.map(
-              (item, questionNumber) =>
-                questionToShow === questionNumber && (
-                  <div key={item.category}>
-                    <QuestionHeader>
-                      <TextDiv
-                        minheight={"20px"}
-                        color={"green"}
-                        fontSize={"14px"}
-                        key={questionNumber + item.category}
-                      >
-                        Category: {decodeHTMLEntities(item.category)}
-                      </TextDiv>
-                      <TextDiv
-                        minheight={"60px"}
-                        color={"#97233F"}
-                        fontSize={"14px"}
-                        key={questionNumber}
-                      >
-                        {decodeHTMLEntities(item.question)}
-                      </TextDiv>
-                    </QuestionHeader>
-                    <AnswersSection>
-                      {shuffleAnswers(
-                        item["incorrect_answers"],
-                        item["correct_answer"]
-                      ).map((ans, i) => (
-                        <Answer
-                          onClick={() => {
-                            setQuestionToShow(questionToShow + 1);
-                            const updatedArray = [...triviaAnswers, ans];
-                            setTriviaAnswers(updatedArray);
-                          }}
-                          key={i}
+          <Container>
+            <QuestionContainer>
+              {data.map(
+                (item, questionNumber) =>
+                  questionToShow === questionNumber && (
+                    <div key={item.category}>
+                      <QuestionHeader>
+                        <TextDiv
+                          minheight={"20px"}
+                          color={"green"}
+                          fontSize={"14px"}
+                          key={questionNumber + item.category}
                         >
-                          {decodeHTMLEntities(ans)}
-                        </Answer>
-                      ))}
-                    </AnswersSection>
-                  </div>
-                )
+                          Category: {decodeHTMLEntities(item.category)}
+                        </TextDiv>
+                        <TextDiv
+                          minheight={"60px"}
+                          color={"#97233F"}
+                          fontSize={"14px"}
+                          key={questionNumber}
+                        >
+                          {decodeHTMLEntities(item.question)}
+                        </TextDiv>
+                      </QuestionHeader>
+                      <AnswersSection>
+                        {shuffleAnswers(
+                          item["incorrect_answers"],
+                          item["correct_answer"]
+                        ).map((ans, i) => (
+                          <Answer
+                            color={
+                              selectedAnswer === ans ? "#72A0C1" : "#aa3333"
+                            }
+                            onClick={() => setSelectedAnswer(ans)}
+                            // onClick={() => {
+                            //   setQuestionToShow(questionToShow + 1);
+                            //   const updatedArray = [...triviaAnswers, ans];
+                            //   setTriviaAnswers(updatedArray);
+                            // }}
+                            key={i}
+                          >
+                            {decodeHTMLEntities(ans)}
+                          </Answer>
+                        ))}
+                      </AnswersSection>
+                    </div>
+                  )
+              )}
+            </QuestionContainer>
+            {selectedAnswer && (
+              <ContainerBottom>
+                <StyledButton
+                  onClick={() => {
+                    setQuestionToShow(questionToShow + 1);
+                    const updatedArray = [...triviaAnswers, selectedAnswer];
+                    setTriviaAnswers(updatedArray);
+                    setSelectedAnswer("");
+                  }}
+                >
+                  Next
+                </StyledButton>
+              </ContainerBottom>
             )}
-          </QuestionContainer>
+          </Container>
         ) : (
           <>
             <TextDiv minheight={"20px"} color={"green"} fontSize={"20px"}>
